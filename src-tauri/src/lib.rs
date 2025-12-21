@@ -36,6 +36,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             adapters::tauri_commands::add_project,
             adapters::tauri_commands::get_projects,
+            adapters::tauri_commands::get_todos_by_project,
+            adapters::tauri_commands::add_todo,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

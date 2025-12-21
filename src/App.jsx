@@ -8,47 +8,60 @@ import WorkTimer from "./WorkTimer";
 import WorkSummary from "./WorkSummary";
 import TodoManager from "./TodoManager";
 import { ProjectsView } from "./components/ProjectsView";
+import { useProjectTodos } from "./hooks/useProjectTodos";
+import { TodoListView } from "./components/TodoListView";
+//import { ProjectProvider } from "./contexts/ProjectContext";
 import "./App.css";
 
 function App() {
+  const [greetMsg, setGreetMsg] = useState("");
+  const [name, setName] = useState("");
+
+  // ...existing code...
+
+  // プロジェクト管理
+  const [projects, setProjects] = useState([]);
+
+  const [selectedProject, setSelectedProject] = useState("");
+
+  // ...existing code...
+
+  // ToDo管理
+  //const [todos, setTodos] = useState([]);
+  //const [todoInput, setTodoInput] = useState("");
+
+  // // プロジェクト追加
+  // const handleAddProject = () => {
+  //   const name = newProject.trim();
+  //   if (!name || projects.includes(name)) return;
+  //   setProjects([...projects, name]);
+  //   setNewProject("");
+  // };
+
+  // // プロジェクト選択時にToDo取得
+  // useEffect(() => {
+  //   if (!selectedProject) return;
+  //   (async () => {
+  //     const todos = await invoke("get_todos", { project: selectedProject });
+  //     setTodos(todos);
+  //   })();
+  // }, [selectedProject]);
+
+  const { selectedProjectId, setSelectedProjectId } = useState(null);
+  const { todos, loading, error } = useProjectTodos(selectedProjectId, setSelectedProjectId);
   return (
     <main className="container">
       <Tabs>
         <TabList>
-          <Tab>work</Tab>
+          <Tab>project</Tab>
+          <Tab>todo</Tab>
           <Tab>summary</Tab>
         </TabList>
-
         <TabPanel>
-          {/* <div style={{ marginBottom: '1rem' }}>
-            <input
-              type="text"
-              value={newProject}
-              onChange={e => setNewProject(e.target.value)}
-              placeholder="新しいプロジェクト名"
-              style={{ fontSize: '1rem', padding: '0.5rem', width: '200px' }}
-            />
-            <button onClick={handleAddProject}>追加</button>
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <select
-              value={selectedProject}
-              onChange={e => setSelectedProject(e.target.value)}
-              style={{ fontSize: '1rem', padding: '0.5rem', width: '220px' }}
-            >
-              <option value="">プロジェクトを選択</option>
-              {projects.map(p => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </div> */}
           <ProjectsView />
-
-          {/* 作業時間計測UI（分離コンポーネント） */}
-          {/* {selectedProject && <WorkTimer project={selectedProject} />} */}
-
-          {/* ToDo管理UI（分離コンポーネント） */}
-          {/* {selectedProject && <TodoManager project={selectedProject} />} */}
+        </TabPanel>
+        <TabPanel>
+          <TodoListView />
         </TabPanel>
         <TabPanel>
           {/* <WorkSummary projects={projects} /> */}

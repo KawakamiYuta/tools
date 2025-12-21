@@ -1,6 +1,7 @@
 use rusqlite::{Connection, Result};
 
-use crate::core::entity::{Project, ProjectRepository};
+use crate::core::project::{Project, ProjectRepository};
+use crate::core::todo::{Todo, TodoRepository};
 
 pub struct SqliteRepository {
     pub path: String,
@@ -12,11 +13,12 @@ impl SqliteRepository {
 
         conn.execute_batch(
             r#"
-        CREATE TABLE IF NOT EXISTS todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS todos (
+            id TEXT PRIMARY KEY,
             project TEXT NOT NULL,
             task TEXT NOT NULL,
-            completed BOOLEAN NOT NULL
+            completed INTEGER NOT NULL,
+            created_at INTEGER NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS projects (
@@ -68,5 +70,46 @@ impl ProjectRepository for SqliteRepository {
         }
         dbg!(&projects);
         Ok(projects)
+    }
+}
+
+impl TodoRepository for SqliteRepository {
+    type Error = rusqlite::Error;
+
+    fn add_todo(&self, todo: &Todo) -> Result<(), Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        conn.execute(
+            "INSERT INTO todos (id, project, task, completed, created_at) VALUES (?1, ?2, ?3, ?4, ?5)",
+            rusqlite::params![
+                todo.id,
+                todo.project_id,
+                todo.description,
+                todo.completed,
+                todo.created_at
+            ],
+        )?;
+        Ok(())
+    }
+
+    fn get_todos_by_project(&self, project_id: &str) -> Result<Vec<Todo>, Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        let mut stmt = conn.prepare(
+            "SELECT id, project, task, completed, created_at FROM todos WHERE project = ?1",
+        )?;
+        let todo_iter = stmt.query_map(rusqlite::params![project_id], |row| {
+            Ok(Todo {
+                id: row.get(0)?,
+                project_id: row.get(1)?,
+                description: row.get(2)?,
+                completed: row.get(3)?,
+                created_at: row.get(4)?,
+            })
+        })?;
+
+        let mut todos = Vec::new();
+        for todo in todo_iter {
+            todos.push(todo?);
+        }
+        Ok(todos)
     }
 }

@@ -1,47 +1,37 @@
-//import { useProjects } from "../hooks/useProjects";
-import { useEffect, useState, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/core";
+// components/ProjectList.jsx
+import { useState } from "react";
+import { projectViewModel } from "../viewmodels/projectViewModel";
+import { useProjectViewModel } from "../hooks/useProjectViewModel";
+
 export function ProjectsView() {
-  // const {
-  //   projects,
-  //   selectedProjectId,
-  //   selectProject,
-  //   addProject,
-  // } = useProjects();
-
+  const { projects, selectedProjectId } =
+    useProjectViewModel();
   const [newProject, setNewProject] = useState("");
-  const [projects, setProjects] = useState([]);
 
-
-  useEffect(() => {
-  (async () => {
-      const result = await invoke("get_projects");
-      setProjects(result);
-  })();
-}, []);
-
-    // プロジェクト追加
-  const handleAddProject = async () => {
+  const handleAdd = async () => {
     const name = newProject.trim();
-    if (!name || projects.includes(name)) return;
-    const result = await invoke("add_project", { name });
+    if (!name) return;
+    await projectViewModel.addProject(name);
     setNewProject("");
-    const lst = await invoke("get_projects");
-    setProjects(lst);
   };
 
-  console.log("projects:", projects);
   return (
     <div>
       <h3>Projects</h3>
 
       <ul>
-        {projects.map((p) => (
+        {projects.map(p => (
           <li
             key={p.id}
+            onClick={() =>
+              projectViewModel.selectProject(p.id)
+            }
             style={{
-              fontWeight: "normal",
               cursor: "pointer",
+              fontWeight:
+                p.id === selectedProjectId
+                  ? "bold"
+                  : "normal",
             }}
           >
             {p.name}
@@ -49,16 +39,12 @@ export function ProjectsView() {
         ))}
       </ul>
 
-<div style={{ marginBottom: '1rem' }}>
-            <input
-              type="text"
-              value={newProject}
-              onChange={e => setNewProject(e.target.value)}
-              placeholder="新しいプロジェクト名"
-              style={{ fontSize: '1rem', padding: '0.5rem', width: '200px' }}
-            />
-            <button onClick={handleAddProject}>追加</button>
-          </div>
+      <input
+        value={newProject}
+        onChange={e => setNewProject(e.target.value)}
+        placeholder="新しいプロジェクト"
+      />
+      <button onClick={handleAdd}>追加</button>
     </div>
   );
 }

@@ -4,9 +4,9 @@ import { invoke } from "@tauri-apps/api/core";
 /**
  * プロジェクト管理用カスタムフック
  */
-export function useProjects() {
+export function useProjects({selectedProjectId, setSelectedProjectId}) {
   const [projects, setProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  //const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -40,8 +40,8 @@ export function useProjects() {
 
     try {
       const newProject = await invoke("add_project", { name });
-      //setProjects((prev) => [...prev, newProject]);
-      //setSelectedProjectId(newProject.id);
+      setProjects((prev) => [...prev, newProject]);
+      setSelectedProjectId(newProject.id);
     } catch (e) {
       setError(e);
     }
