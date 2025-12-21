@@ -1,32 +1,30 @@
-use tauri::{App, State};
 use std::sync::Mutex;
+use tauri::State;
 
-use crate::core::entity::{Project, ProjectRepository};
 use super::sqlite_repository::SqliteRepository;
+use crate::core::entity::{Project, ProjectRepository};
 
 pub struct AppState {
-    db: std::sync::Mutex<SqliteRepository>,
+    db: SqliteRepository,
 }
 
 impl AppState {
-    pub fn new() -> Self {
+    pub fn new(path: &str) -> Self {
         Self {
-            db: Mutex::new(SqliteRepository::default()),
+            db: SqliteRepository::new(path).expect("Failed to create default db"),
         }
     }
 }
 
 #[tauri::command]
 pub fn get_projects(state: State<AppState>) -> Result<Vec<Project>, String> {
-    let db = state.db.lock().unwrap();
-    db.get_projects().map_err(|e| e.to_string())
+    state.db.get_projects().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub fn add_project(state: State<AppState>, name: String) -> Result<Project, String> {
     let project = Project::new(name);
-    let db = state.db.lock().unwrap();
-    db.add_project(&project).map_err(|e| e.to_string())?;
-
+    state.db.add_project(&project).map_err(|e| e.to_string())?;
+    dbg!(&project);
     Ok(project)
 }

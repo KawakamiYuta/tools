@@ -3,15 +3,15 @@ use rusqlite::{Connection, Result};
 use crate::core::entity::{Project, ProjectRepository};
 
 pub struct SqliteRepository {
-    pub conn: Connection,
+    pub path: String,
 }
 
 impl SqliteRepository {
     pub fn new(db_path: &str) -> rusqlite::Result<Self> {
         let conn = Connection::open(db_path)?;
 
-    conn.execute_batch(
-        r#"
+        conn.execute_batch(
+            r#"
         CREATE TABLE IF NOT EXISTS todos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             project TEXT NOT NULL,
@@ -24,11 +24,13 @@ impl SqliteRepository {
             name TEXT NOT NULL,
             created_at INTEGER NOT NULL
         );
-        "#
-    )?;
-    
-    Ok(Self { conn })
-    }    
+        "#,
+        )?;
+
+        Ok(Self {
+            path: db_path.to_string(),
+        })
+    }
 }
 
 impl Default for SqliteRepository {
@@ -41,7 +43,8 @@ impl ProjectRepository for SqliteRepository {
     type Error = rusqlite::Error;
 
     fn add_project(&self, project: &Project) -> Result<(), Self::Error> {
-        self.conn.execute(
+        let conn = Connection::open(&self.path)?;
+        conn.execute(
             "INSERT INTO projects (id, name, created_at) VALUES (?1, ?2, ?3)",
             rusqlite::params![project.id, project.name, project.created_at],
         )?;
@@ -49,7 +52,8 @@ impl ProjectRepository for SqliteRepository {
     }
 
     fn get_projects(&self) -> Result<Vec<Project>, Self::Error> {
-        let mut stmt = self.conn.prepare("SELECT id, name, created_at FROM projects")?;
+        let conn = Connection::open(&self.path)?;
+        let mut stmt = conn.prepare("SELECT id, name, created_at FROM projects")?;
         let project_iter = stmt.query_map([], |row| {
             Ok(Project {
                 id: row.get(0)?,
@@ -62,6 +66,7 @@ impl ProjectRepository for SqliteRepository {
         for project in project_iter {
             projects.push(project?);
         }
+        dbg!(&projects);
         Ok(projects)
     }
 }

@@ -1,8 +1,8 @@
+use chrono;
 use serde::Serialize;
-use uuid::Uuid;
-use chrono::Utc;
+use uuid;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Project {
     pub id: String,
     pub name: String,

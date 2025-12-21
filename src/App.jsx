@@ -1,49 +1,62 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useState, useEffect } from "react";
+
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
 import { invoke } from "@tauri-apps/api/core";
+import WorkTimer from "./WorkTimer";
+import WorkSummary from "./WorkSummary";
+import TodoManager from "./TodoManager";
+import { ProjectsView } from "./components/ProjectsView";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+      <Tabs>
+        <TabList>
+          <Tab>work</Tab>
+          <Tab>summary</Tab>
+        </TabList>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+        <TabPanel>
+          {/* <div style={{ marginBottom: '1rem' }}>
+            <input
+              type="text"
+              value={newProject}
+              onChange={e => setNewProject(e.target.value)}
+              placeholder="新しいプロジェクト名"
+              style={{ fontSize: '1rem', padding: '0.5rem', width: '200px' }}
+            />
+            <button onClick={handleAddProject}>追加</button>
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <select
+              value={selectedProject}
+              onChange={e => setSelectedProject(e.target.value)}
+              style={{ fontSize: '1rem', padding: '0.5rem', width: '220px' }}
+            >
+              <option value="">プロジェクトを選択</option>
+              {projects.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div> */}
+          <ProjectsView />
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
+          {/* 作業時間計測UI（分離コンポーネント） */}
+          {/* {selectedProject && <WorkTimer project={selectedProject} />} */}
+
+          {/* ToDo管理UI（分離コンポーネント） */}
+          {/* {selectedProject && <TodoManager project={selectedProject} />} */}
+        </TabPanel>
+        <TabPanel>
+          {/* <WorkSummary projects={projects} /> */}
+
+        </TabPanel>
+      </Tabs>
+
+
     </main>
   );
 }
