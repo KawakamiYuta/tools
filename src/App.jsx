@@ -10,8 +10,11 @@ import TodoManager from "./TodoManager";
 import { ProjectsView } from "./components/ProjectsView";
 import { useProjectTodos } from "./hooks/useProjectTodos";
 import { TodoListView } from "./components/TodoListView";
+//import { WorkTimeTrackView } from "./components/WorkTimeTrackView";
 //import { ProjectProvider } from "./contexts/ProjectContext";
 import "./App.css";
+import WorkTimeTrackView from "./components/worktime/WorkTimeTrackView";
+//import { WorkTimeTrackView } from "./components/WorkTimeTrackView";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -55,6 +58,7 @@ function App() {
         <TabList>
           <Tab>project</Tab>
           <Tab>todo</Tab>
+          <Tab>work</Tab>
           <Tab>summary</Tab>
         </TabList>
         <TabPanel>
@@ -62,6 +66,9 @@ function App() {
         </TabPanel>
         <TabPanel>
           <TodoListView />
+        </TabPanel>
+        <TabPanel>
+          <WorkTimeTrackView />
         </TabPanel>
         <TabPanel>
           {/* <WorkSummary projects={projects} /> */}

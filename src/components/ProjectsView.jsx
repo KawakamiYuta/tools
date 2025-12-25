@@ -4,8 +4,7 @@ import { projectViewModel } from "../viewmodels/projectViewModel";
 import { useProjectViewModel } from "../hooks/useProjectViewModel";
 
 export function ProjectsView() {
-  const { projects, selectedProjectId } =
-    useProjectViewModel();
+  const { projects, selectedProjectId } = useProjectViewModel();
   const [newProject, setNewProject] = useState("");
 
   const handleAdd = async () => {

@@ -2,7 +2,7 @@ mod adapters;
 mod core;
 use std::fs;
 use tauri::Manager;
-use tauri::{App, AppHandle};
+// use tauri::{App, AppHandle};
 use tauri_plugin_log;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -38,6 +38,7 @@ pub fn run() {
             adapters::tauri_commands::get_projects,
             adapters::tauri_commands::get_todos_by_project,
             adapters::tauri_commands::add_todo,
+            adapters::tauri_commands::start_measure_worktime,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

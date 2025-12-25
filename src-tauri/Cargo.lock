@@ -2882,6 +2882,7 @@ name = "project-tools"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "once_cell",
  "rusqlite",
  "serde",
  "serde_json",
