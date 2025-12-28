@@ -5,11 +5,12 @@ let state = {
   running: false,
   totalMs: 0,
   startTime: null,
+  endTime: null,
   project: null,
   description: "",
 };
 
-let timerId = null;
+let timeout = null;
 
 const listeners = new Set();
 const notify = () => listeners.forEach(l => l());
@@ -38,7 +39,7 @@ export const workTimeViewModel = {
     notify();
 
     // 定周期更新（500ms）
-    timerId = setInterval(() => {
+    timeout = setInterval(() => {
       if (!state.running || state.startTime === null) return;
 
       state = {
@@ -49,13 +50,21 @@ export const workTimeViewModel = {
     }, 500);
   },
 
-  async stop() {
+  async stop(project, description) {
     if (!state.running) return;
 
-    if (timerId !== null) {
-      clearInterval(timerId);
-      timerId = null;
+    if (timeout !== null) {
+      clearInterval(timeout);
+      timeout = null;
     }
+
+    await invoke("add_work_session", {
+      project_id: project,
+      description,
+      start: startTime,
+      end: endTime,
+    }
+    )
 
     state = {
       ...state,

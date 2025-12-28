@@ -12,8 +12,6 @@ export function TodoListView() {
 
     const [newTodo, setNewTodo] = useState("");
 
-
-
   if (!selectedProjectId) {
     return <div>プロジェクトを選択してください</div>;
   }

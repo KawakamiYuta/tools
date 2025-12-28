@@ -5,7 +5,7 @@ use tauri::State;
 use super::sqlite_repository::SqliteRepository;
 use crate::core::project::{Project, ProjectRepository};
 use crate::core::todo::{Todo, TodoRepository};
-use crate::core::worktime::{WorkTime, WorkTimeRepository};
+use crate::core::work_session::{WorkSession, WorkSessionRepository};
 
 pub struct AppState {
     db: SqliteRepository,
@@ -56,45 +56,29 @@ pub fn add_todo(
 }
 
 #[tauri::command]
-pub fn get_worktimes_by_project(
+pub fn get_work_sessions_by_project(
     state: State<AppState>,
     project_id: String,
-) -> Result<Vec<WorkTime>, String> {
+) -> Result<Vec<WorkSession>, String> {
     state
         .db
-        .get_worktimes_by_project(&project_id)
+        .get_work_sessions_by_project(&project_id)
         .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn start_measure_worktime(
+pub fn add_work_session(
     state: State<AppState>,
     project_id: String,
     description: String,
-) -> Result<WorkTime, String> {
-    let worktime = WorkTime::new(project_id, description);
+    start: i64,
+    stop: i64
+) -> Result<WorkSession, String> {
+    let worktime = WorkSession::new(project_id, description, start, stop);
     dbg!(&worktime);
     state
         .db
-        .add_worktime(&worktime)
+        .add_work_session(&worktime)
         .map_err(|e| e.to_string())?;
     Ok(worktime)
-}
-
-#[tauri::command]
-pub fn stop_measure_worktime(
-    state: State<AppState>,
-    timer_id: String,
-) -> Result<WorkTime, String> {
-    // let mut worktime = state
-    //     .db
-    //     .update_worktime(&timer_id)
-    //     .map_err(|e| e.to_string())?;
-    // worktime.running = false;
-    // state
-    //     .db
-    //     .update_worktime(&worktime)
-    //     .map_err(|e| e.to_string())?;
-    // Ok(worktime)
-    Ok(WorkTime::new("".to_string(), "".to_string()))
 }

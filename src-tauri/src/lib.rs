@@ -38,7 +38,8 @@ pub fn run() {
             adapters::tauri_commands::get_projects,
             adapters::tauri_commands::get_todos_by_project,
             adapters::tauri_commands::add_todo,
-            adapters::tauri_commands::start_measure_worktime,
+            adapters::tauri_commands::add_work_session,
+            adapters::tauri_commands::get_work_sessions_by_project
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

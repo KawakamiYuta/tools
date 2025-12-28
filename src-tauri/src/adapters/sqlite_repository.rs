@@ -2,7 +2,7 @@ use rusqlite::{Connection, Result};
 
 use crate::core::project::{Project, ProjectRepository};
 use crate::core::todo::{Todo, TodoRepository};
-use crate::core::worktime::{WorkTime, WorkTimeRepository};
+use crate::core::work_session::{WorkSession, WorkSessionRepository};
 
 pub struct SqliteRepository {
     pub path: String,
@@ -33,8 +33,7 @@ CREATE TABLE IF NOT EXISTS todos (
             project_id TEXT NOT NULL,
             description TEXT NOT NULL,
             start INTEGER NOT NULL,
-            end INTEGER NOT NULL,
-            running INTEGER NOT NULL
+            end INTEGER NOT NULL
         );
         "#,
         )?;
@@ -124,54 +123,36 @@ impl TodoRepository for SqliteRepository {
     }
 }
 
-impl WorkTimeRepository for SqliteRepository {
+impl WorkSessionRepository for SqliteRepository {
     type Error = rusqlite::Error;
 
-    fn add_worktime(&self, worktime: &WorkTime) -> Result<(), Self::Error> {
+    fn add_work_session(&self, work_session: &WorkSession) -> Result<(), Self::Error> {
         let conn = Connection::open(&self.path)?;
         conn.execute(
-            "INSERT INTO worktimes (id, project_id, description, start, end, running) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            "INSERT INTO worktimes (id, project_id, description, start, end) VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![
-                worktime.id,
-                worktime.project_id,
-                worktime.description,
-                worktime.start,
-                worktime.end,
-                worktime.running
+                work_session.id,
+                work_session.project_id,
+                work_session.description,
+                work_session.start,
+                work_session.end,
             ],
         )?;
         Ok(())
     }
 
-    fn update_worktime(&self, worktime: &WorkTime) -> Result<(), Self::Error> {
-        let conn = Connection::open(&self.path)?;
-        conn.execute(
-            "UPDATE worktimes SET project_id = ?1, description = ?2, start = ?3, end = ?4, running = ?5 WHERE id = ?6",
-            rusqlite::params![
-                worktime.project_id,
-                worktime.description,
-                worktime.start,
-                worktime.end,
-                worktime.running,
-                worktime.id
-            ],
-        )?;
-        Ok(())
-    }
-
-    fn get_worktimes_by_project(&self, project_id: &str) -> Result<Vec<WorkTime>, Self::Error> {
+    fn get_work_sessions_by_project(&self, project_id: &str) -> Result<Vec<WorkSession>, Self::Error> {
         let conn = Connection::open(&self.path)?;
         let mut stmt = conn.prepare(
             "SELECT id, project_id, description, start, end, running FROM worktimes WHERE project_id = ?1",
         )?;
         let worktime_iter = stmt.query_map(rusqlite::params![project_id], |row| {
-            Ok(WorkTime {
+            Ok(WorkSession {
                 id: row.get(0)?,
                 project_id: row.get(1)?,
                 description: row.get(2)?,
                 start: row.get(3)?,
                 end: row.get(4)?,
-                running: row.get(5)?,
             })
         })?;
 
