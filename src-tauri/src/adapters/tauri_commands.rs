@@ -67,14 +67,23 @@ pub fn get_work_sessions_by_project(
 }
 
 #[tauri::command]
+pub fn get_work_sessions(state: State<AppState>) -> Result<Vec<WorkSession>, String> {
+    // Implement a method in the repository to get all work sessions
+    state
+        .db
+        .get_work_sessions()
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub fn add_work_session(
     state: State<AppState>,
-    project_id: String,
+    project_id: Option<String>,
     description: String,
     start: i64,
-    stop: i64
+    end: i64
 ) -> Result<WorkSession, String> {
-    let worktime = WorkSession::new(project_id, description, start, stop);
+    let worktime = WorkSession::new(project_id, description, start, end);
     dbg!(&worktime);
     state
         .db

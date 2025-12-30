@@ -1,13 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
-import { DessertIcon } from "lucide-react";
 
 let state = {
   running: false,
   totalMs: 0,
   startTime: null,
-  endTime: null,
   project: null,
   description: "",
+  sessions: [],
 };
 
 let timeout = null;
@@ -59,10 +58,10 @@ export const workTimeViewModel = {
     }
 
     await invoke("add_work_session", {
-      project_id: project,
+      projectId: project,
       description,
-      start: startTime,
-      end: endTime,
+      start: state.startTime,
+      end: Date.now(),
     }
     )
 
@@ -70,6 +69,7 @@ export const workTimeViewModel = {
       ...state,
       running: false,
       startTime: null,
+      totalMs: 0,
       description: "",
     };
     notify();
@@ -83,5 +83,16 @@ export const workTimeViewModel = {
   setDescription(description) {
     state = { ...state, description };
     notify();
+  },
+
+  async fetchSessions() {
+    try {
+      const sessions = await invoke("get_work_sessions");
+      console.log("Fetched sessions:", sessions);
+      state = { ...state, sessions };
+      notify();
+    } catch (e) {
+      console.error("Failed to fetch sessions", e);
+    }
   },
 };

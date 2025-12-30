@@ -9,10 +9,11 @@ import { useWorkTimeViewModel } from "../../hooks/useWorkTimeViewModel";
 import { workTimeViewModel } from "../../viewmodels/workTimeViewModel";
 import { projectViewModel } from "../../viewmodels/projectViewModel";
 import { ProjectSelectView } from "./ProjectSelectView";
+import { WorkSessionsListView } from "./WorkSessionsListView";
 
 export default function WorkTimeTrackView() {
-  const { running, totalMs, project, description } = useWorkTimeViewModel();
-  console.log("WorkTimeTrackView", running, totalMs, project, description);
+  const { running, totalMs, project, description, sessions } = useWorkTimeViewModel();
+  console.log("WorkTimeTrackView", running, totalMs, project, description, sessions);
   //const [ selected, setSelected ] = useState(null);
 
   const start = async () => {
@@ -23,7 +24,8 @@ export default function WorkTimeTrackView() {
   const stop = async () => {
     console.log("stop called with description:", description);
     workTimeViewModel.setDescription(description);
-    await workTimeViewModel.stop();
+    await workTimeViewModel.stop(project, description);
+    await workTimeViewModel.fetchSessions();
   };
 
   return (
@@ -41,6 +43,8 @@ export default function WorkTimeTrackView() {
         running={running}
         onToggle={running ? stop : start}
       />
+
+      <WorkSessionsListView sessions={sessions} />
 
       <div className="text-sm text-gray-500">
         {running ? "作業中" : "停止中"}

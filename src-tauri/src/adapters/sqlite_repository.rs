@@ -35,6 +35,14 @@ CREATE TABLE IF NOT EXISTS todos (
             start INTEGER NOT NULL,
             end INTEGER NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS work_sessions (
+            id TEXT PRIMARY KEY,
+            project_id TEXT,
+            description TEXT NOT NULL,
+            start INTEGER NOT NULL,
+            end INTEGER NOT NULL
+        );
         "#,
         )?;
 
@@ -129,16 +137,36 @@ impl WorkSessionRepository for SqliteRepository {
     fn add_work_session(&self, work_session: &WorkSession) -> Result<(), Self::Error> {
         let conn = Connection::open(&self.path)?;
         conn.execute(
-            "INSERT INTO worktimes (id, project_id, description, start, end) VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT INTO work_sessions (id, project_id, description, start, end) VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![
                 work_session.id,
                 work_session.project_id,
                 work_session.description,
                 work_session.start,
-                work_session.end,
+                work_session.end
             ],
         )?;
         Ok(())
+    }
+
+    fn get_work_sessions(&self) -> std::result::Result<Vec<WorkSession>, Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        let mut stmt = conn.prepare("SELECT id, project_id, description, start, end FROM work_sessions")?;
+        let worktime_iter = stmt.query_map([], |row| {
+            Ok(WorkSession {
+                id: row.get(0)?,
+                project_id: row.get(1)?,
+                description: row.get(2)?,
+                start: row.get(3)?,
+                end: row.get(4)?,
+            })
+        })?;
+
+        let mut worktimes = Vec::new();
+        for worktime in worktime_iter {
+            worktimes.push(worktime?);
+        }
+        Ok(worktimes)
     }
 
     fn get_work_sessions_by_project(&self, project_id: &str) -> Result<Vec<WorkSession>, Self::Error> {
