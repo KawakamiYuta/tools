@@ -91,3 +91,36 @@ pub fn add_work_session(
         .map_err(|e| e.to_string())?;
     Ok(worktime)
 }
+
+#[tauri::command]
+pub fn update_work_session(
+    state: State<AppState>,
+    work_session: WorkSession,
+) -> Result<(), String> {
+    state
+        .db
+        .update_work_session(&work_session)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn remove_work_session(
+    state: State<AppState>,
+    work_session_id: String,
+) -> Result<(), String> {
+    state
+        .db
+        .remove_work_session(&work_session_id)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn remove_project(
+    state: State<AppState>,
+    project_id: String,
+) -> Result<(), String> {
+    state
+        .db
+        .remove_project(&project_id)
+        .map_err(|e| e.to_string())
+}

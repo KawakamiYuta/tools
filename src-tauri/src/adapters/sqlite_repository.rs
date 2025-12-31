@@ -70,6 +70,15 @@ impl ProjectRepository for SqliteRepository {
         Ok(())
     }
 
+    fn remove_project(&self, project_id: &str) -> std::result::Result<(), Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        conn.execute(
+            "DELETE FROM projects WHERE id = ?1",
+            rusqlite::params![project_id],
+        )?;
+        Ok(())
+    }
+
     fn get_projects(&self) -> Result<Vec<Project>, Self::Error> {
         let conn = Connection::open(&self.path)?;
         let mut stmt = conn.prepare("SELECT id, name, created_at FROM projects")?;
@@ -145,6 +154,30 @@ impl WorkSessionRepository for SqliteRepository {
                 work_session.start,
                 work_session.end
             ],
+        )?;
+        Ok(())
+    }
+
+    fn update_work_session(&self, work_session: &WorkSession) -> std::result::Result<(), Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        conn.execute(
+            "UPDATE work_sessions SET project_id = ?1, description = ?2, start = ?3, end = ?4 WHERE id = ?5",
+            rusqlite::params![
+                work_session.project_id,
+                work_session.description,
+                work_session.start,
+                work_session.end,
+                work_session.id
+            ],
+        )?;
+        Ok(())
+    }
+
+    fn remove_work_session(&self, work_session_id: &str) -> std::result::Result<(), Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        conn.execute(
+            "DELETE FROM work_sessions WHERE id = ?1",
+            rusqlite::params![work_session_id],
         )?;
         Ok(())
     }

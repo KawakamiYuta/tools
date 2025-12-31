@@ -31,7 +31,7 @@ export function WorkSessionsListView({ sessions = [] }) {
         const ongoing = s.end == null;
         return {
           id: s.id,
-          description: s.description || "(説明なし)",
+          description: s.description,
           range: `${formatShortDate(start)} — ${ongoing ? "未終了" : formatShortDate(end)}`,
           durationMs: Math.max(0, end - start),
           duration: formatDurationMs(Math.max(0, end - start)),
@@ -44,12 +44,14 @@ export function WorkSessionsListView({ sessions = [] }) {
   const columns = [
     {
       field: "project",
+      editable: true,
       headerName: "プロジェクト",
       width: 160,
       renderCell: (params) => <div>{params.row.projectName}</div>,
     },
     {
       field: "description",
+      editable: true,
       headerName: "説明",
       flex: 1,
       minWidth: 240,
@@ -62,6 +64,7 @@ export function WorkSessionsListView({ sessions = [] }) {
     },
     {
       field: "range",
+      editable: true,
       headerName: "期間",
       width: 240,
       renderCell: (params) => <div style={{ color: "#6b7280" }}>{params.value}</div>,

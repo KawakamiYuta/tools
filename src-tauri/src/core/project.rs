@@ -25,5 +25,6 @@ pub trait ProjectRepository {
     type Error; // 実装ごとのエラー型を指定可能にする
 
     fn add_project(&self, project: &Project) -> Result<(), Self::Error>;
+    fn remove_project(&self, project_id: &str) -> Result<(), Self::Error>;
     fn get_projects(&self) -> Result<Vec<Project>, Self::Error>;
 }

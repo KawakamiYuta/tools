@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct WorkSession {
     pub id: String,
     pub project_id: Option<String>,
@@ -23,6 +23,8 @@ pub trait WorkSessionRepository {
     type Error;
 
     fn add_work_session(&self, work_session: &WorkSession) -> Result<(), Self::Error>;
+    fn update_work_session(&self, work_session: &WorkSession) -> Result<(), Self::Error>;
+    fn remove_work_session(&self, work_session_id: &str) -> Result<(), Self::Error>;
     fn get_work_sessions_by_project(&self, project_id: &str) -> Result<Vec<WorkSession>, Self::Error>;
     fn get_work_sessions(&self) -> Result<Vec<WorkSession>, Self::Error>;
 }
