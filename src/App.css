@@ -1,21 +1,49 @@
 /* Hover effects */
 .logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+  filter: drop-shadow(0 0 1.8em rgba(212,175,55,0.45));
 }
 
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
-}
+  filter: drop-shadow(0 0 1.8em rgba(212,175,55,0.45));
+} 
 
 /* Dark Theme Root */
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
+  --font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  --font-size: 16px;
+  --line-height: 24px;
+  --font-weight: 400;
 
-  color: #f6f6f6;               /* Light text */
-  background-color: #1d1d1d;    /* Dark background */
+  /* Executive / Authentic palette */
+  --bg: #0F1720;        /* deep navy charcoal */
+  --panel: #0B1220;     /* panel background */
+  --muted: #94A3B8;     /* slate muted */
+  --text: #F3F4F6;      /* off-white */
+  --accent: #D4AF37;    /* warm gold */
+  --accent-600: #B8922A;
+  --muted-bg: rgba(255,255,255,0.03);
+}
+
+/* Light theme overrides */
+.theme-light {
+  --bg: #F7F5F2;   /* warm cream */
+  --panel: #FFFFFF;
+  --text: #0B1220;
+  --muted: #6B7280;
+  --accent: #B8922A;
+  --accent-600: #9b7a1f;
+  --muted-bg: rgba(11,17,32,0.04);
+}
+
+/* Base element defaults */
+:root, body {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  font-weight: var(--font-weight);
+
+  color: var(--text);
+  background-color: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,6 +51,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
 
 .container {
   margin: 0;
@@ -41,7 +70,7 @@
 }
 
 .logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
+  filter: drop-shadow(0 0 1.8em rgba(212,175,55,0.45));
 }
 
 .row {
@@ -51,13 +80,16 @@
 
 a {
   font-weight: 500;
-  color: #8aa0ff;
-  text-decoration: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 150ms, color 150ms;
 }
 
 a:hover {
-  color: #24c8db;
-}
+  color: var(--accent-600);
+  text-decoration-color: rgba(212,175,55,0.16);
+} 
 
 h1 {
   text-align: center;
@@ -71,10 +103,10 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: #ffffff;
-  background-color: #0f0f0f98; /* Semi-transparent dark */
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  background-color: var(--muted-bg); /* subtle panel */
+  transition: border-color 0.18s, background-color 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 6px rgba(2,6,23,0.45);
 }
 
 button {
@@ -82,12 +114,13 @@ button {
 }
 
 button:hover {
-  border-color: #396cd8;
+  border-color: var(--accent-600);
+  box-shadow: 0 4px 14px rgba(13,12,12,0.25);
 }
 button:active {
-  border-color: #396cd8;
-  background-color: #0f0f0f69;
-}
+  border-color: var(--accent-600);
+  background-color: rgba(189,159,70,0.06);
+} 
 
 input,
 button {
