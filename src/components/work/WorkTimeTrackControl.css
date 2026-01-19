@@ -1,0 +1,43 @@
+/* ===== Card ===== */
+.work-time-track-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== Layout ===== */
+.work-time-track-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 入力ブロック */
+.work-time-track-control__inputs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+min-width: 0;   /* ← これが超重要（はみ出し防止） */
+}
+
+.work-time-track-control__project-select {
+  width: 100%;
+}
+
+.work-time-track-control__description-input {
+  width: 100%;
+  box-sizing: border-box; /* ← padding込みで幅計算 */
+  /* padding: 6px 8px;
+  font-size: 14px; */
+}
+
+/* 状態表示 */
+.work-time-track-control__status {
+  font-size: 16px;
+  color: #6b7280;
+  white-space: nowrap;
+}

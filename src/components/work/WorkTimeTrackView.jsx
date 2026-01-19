@@ -2,53 +2,36 @@
 
 import { useState } from "react";
 
-import { TimerToggleButton } from "./TimerToggleButton";
-import { ElapsedTimeView } from "./ElapsedTimeView";
+import { Button } from "@mui/material";
+import { Calendar as CalendarIcon, Table as TableIcon } from "lucide-react";
 
 import { useWorkTimeViewModel } from "../../hooks/useWorkTimeViewModel";
-import { workTimeViewModel } from "../../viewmodels/workTimeViewModel";
-import { projectViewModel } from "../../viewmodels/projectViewModel";
-import { ProjectSelectView } from "./ProjectSelectView";
 import { WorkSessionsListView } from "./WorkSessionsListView";
+import { WorkSessionsCalendarView } from "./WorkSessionsCalendarView";
 
 export default function WorkTimeTrackView() {
-  const { running, totalMs, project, description, sessions } = useWorkTimeViewModel();
-  console.log("WorkTimeTrackView", running, totalMs, project, description, sessions);
+  const { sessions } = useWorkTimeViewModel();
+  const [view, setView] = useState("table");
+
+  //console.log("WorkTimeTrackView", running, totalMs, project, description, sessions);
   //const [ selected, setSelected ] = useState(null);
-
-  const start = async () => {
-    console.log("start called with description:", description);
-    await workTimeViewModel.start();
-  };
-
-  const stop = async () => {
-    console.log("stop called with description:", description);
-    workTimeViewModel.setDescription(description);
-    await workTimeViewModel.stop(project, description);
-    await workTimeViewModel.fetchSessions();
-  };
 
   return (
     <div className="flex flex-col items-center gap-6">
-        <input
-        type="text"
-        value={description}
-        onChange={(e) => workTimeViewModel.setDescription(e.target.value)}
-        placeholder="作業内容を入力してください"
-      />
-      <ProjectSelectView selected={project} setSelected={workTimeViewModel.setProject} />
-      <ElapsedTimeView ms={totalMs} />
-
-      <TimerToggleButton
-        running={running}
-        onToggle={running ? stop : start}
-      />
-
-      <WorkSessionsListView sessions={sessions} />
-
-      <div className="text-sm text-gray-500">
-        {running ? "作業中" : "停止中"}
-      </div>
+          <div className="flex items-center rounded-md bg-gray-100 p-1">
+            <Button 
+            variant={view === "table" ? "contained" : "text"}
+            size="small"
+            startIcon={<TableIcon className="w-4 h-4" />}
+            onClick={() => setView("table")} > テーブル </Button>
+            <Button variant={view === "calendar" ? "contained" : "text"}
+            size="small"
+            startIcon={<CalendarIcon className="w-4 h-4" />}
+            onClick={() => setView("calendar")} > カレンダー </Button>
+          </div>
+      {view === "table" ? (
+      <WorkSessionsListView sessions={sessions} /> ) : 
+      (<WorkSessionsCalendarView sessions={sessions} />)}
     </div>
   );
 }

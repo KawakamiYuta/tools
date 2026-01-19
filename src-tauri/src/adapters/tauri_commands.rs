@@ -1,7 +1,7 @@
 // use core::time;
 // use std::sync::Mutex;
 use tauri::State;
-
+use std::collections::HashMap;
 use super::sqlite_repository::SqliteRepository;
 use crate::core::project::{Project, ProjectRepository};
 use crate::core::todo::{Todo, TodoRepository};
@@ -55,6 +55,56 @@ pub fn add_todo(
     Ok(todo)
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct WorkSessionDto {
+    pub id: String,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub description: String,
+    pub start: i64,
+    pub end: i64,
+    pub duration_seconds: i64,
+}
+
+impl WorkSessionDto {
+   fn from_with_project_name(ws: &WorkSession, project_name: Option<String>) -> Self {
+        Self {
+            id: ws.id.clone(),
+            project_id: ws.project_id.clone(),
+            project_name,
+            description: ws.description.clone(),
+            start: ws.start,
+            end: ws.end,
+            duration_seconds: ws.get_duration_seconds(),
+        }
+    }
+}
+
+impl From<WorkSessionDto> for WorkSession {
+    fn from(dto: WorkSessionDto) -> Self {
+        Self {
+            id: dto.id,
+            project_id: dto.project_id,
+            description: dto.description,
+            start: dto.start,
+            end: dto.end,
+        }
+    }
+}
+
+// impl From<&WorkSession> for WorkSessionDto {
+//     fn from(ws: &WorkSession) -> Self {
+//         Self {
+//             id: ws.id.clone(),
+//             project_name: None,
+//             description: ws.description.clone(),
+//             start: ws.start,
+//             end: ws.end,
+//             duration_seconds: ws.get_duration_seconds(),
+//         }
+//     }
+// }
+
 #[tauri::command]
 pub fn get_work_sessions_by_project(
     state: State<AppState>,
@@ -67,12 +117,30 @@ pub fn get_work_sessions_by_project(
 }
 
 #[tauri::command]
-pub fn get_work_sessions(state: State<AppState>) -> Result<Vec<WorkSession>, String> {
-    // Implement a method in the repository to get all work sessions
+pub fn get_work_sessions(state: State<AppState>) -> Result<Vec<WorkSessionDto>, String> {
+    let projects = state.db.get_projects().map_err(|e| e.to_string())?;
+    let project_map: HashMap<String, String> =
+        projects.into_iter().map(|p| (p.id.clone(), p.name)).collect();
+
     state
         .db
         .get_work_sessions()
         .map_err(|e| e.to_string())
+        .map(|sessions| {
+            sessions
+                .iter()
+                .map(|s| {
+                    let project_name = s
+                        .project_id
+                        .as_ref()
+                        .and_then(|id| project_map.get(id).cloned());
+                    WorkSessionDto::from_with_project_name(s, project_name)
+                })
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev()
+                .collect()
+        })
 }
 
 #[tauri::command]

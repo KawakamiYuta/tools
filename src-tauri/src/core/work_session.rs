@@ -17,6 +17,10 @@ impl WorkSession {
             end: end
         }
     }
+
+    pub fn get_duration_seconds(&self) -> i64 {
+        (self.end - self.start) / 1000
+    }
 }
 
 pub trait WorkSessionRepository {

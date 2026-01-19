@@ -79,6 +79,24 @@ impl ProjectRepository for SqliteRepository {
         Ok(())
     }
 
+    fn get_project_by_id(&self, project_id: &str) -> Result<Option<Project>, Self::Error> {
+        let conn = Connection::open(&self.path)?;
+        let mut stmt = conn.prepare("SELECT id, name, created_at FROM projects WHERE id = ?1")?;
+        let mut project_iter = stmt.query_map(rusqlite::params![project_id], |row| {
+            Ok(Project {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                created_at: row.get(2)?,
+            })
+        })?;
+
+        if let Some(project) = project_iter.next() {
+            Ok(Some(project?))
+        } else {
+            Ok(None)
+        }
+    }
+
     fn get_projects(&self) -> Result<Vec<Project>, Self::Error> {
         let conn = Connection::open(&self.path)?;
         let mut stmt = conn.prepare("SELECT id, name, created_at FROM projects")?;

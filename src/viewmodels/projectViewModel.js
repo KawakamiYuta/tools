@@ -54,29 +54,27 @@ export const projectViewModel = {
     await loadTodos(projectId);
   },
 
-async addProject(name) {
-  const normalized = name.trim();
+  async addProject(name) {
+    const normalized = name.trim();
 
-  // console.log("Adding project:", normalized, state.projects);
+    // console.log("Adding project:", normalized, state.projects);
 
-  if (state.projects.some(p => p.name === normalized)) {
-    return { ok: false, reason: "duplicate" };
-  }
+    if (state.projects.some(p => p.name === normalized)) {
+      return { ok: false, reason: "duplicate" };
+    }
 
-  await invoke("add_project", { name: normalized });
-  await loadProjects();
+    await invoke("add_project", { name: normalized });
+    await loadProjects();
 
-  return { ok: true };
-},
+    return { ok: true };
+  },
 
-async removeProject(projectId) {
-    console.log("Removing project:", projectId);
+  async removeProject(projectId) {
     await invoke("remove_project", { projectId });
     await loadProjects();
-},
+  },
 
   async addTodo(projectId, task) {
-    console.log("addTodo", projectId, task);
     await invoke("add_todo", { projectId, description: task });
     await loadTodos(projectId);
   }

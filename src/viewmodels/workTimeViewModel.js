@@ -14,6 +14,19 @@ let timeout = null;
 const listeners = new Set();
 const notify = () => listeners.forEach(l => l());
 
+async function loadSessions() {
+  try {
+    const sessions = await invoke("get_work_sessions");
+    //console.log("Fetched sessions:", sessions);
+    state = { ...state, sessions };
+    notify();
+  } catch (e) {
+    console.error("Failed to fetch sessions", e);
+  }
+};
+
+loadSessions();
+
 export const workTimeViewModel = {
   // React 用
   getSnapshot() {
@@ -72,27 +85,20 @@ export const workTimeViewModel = {
       totalMs: 0,
       description: "",
     };
+
+    loadSessions();
+  },
+
+  async setDescription(description) {
+    state = {
+      ...state, description
+    };
     notify();
   },
 
-  setProject(project) {
-    state = { ...state, project };
-    notify();
-  },
-
-  setDescription(description) {
-    state = { ...state, description };
-    notify();
-  },
-
-  async fetchSessions() {
-    try {
-      const sessions = await invoke("get_work_sessions");
-      console.log("Fetched sessions:", sessions);
-      state = { ...state, sessions };
-      notify();
-    } catch (e) {
-      console.error("Failed to fetch sessions", e);
-    }
-  },
+  async updateWorkSession(session) {
+    console.log("Updating work session:", session);
+    await invoke("update_work_session", { workSession: session });
+    loadSessions();
+  }
 };

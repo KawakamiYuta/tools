@@ -1,0 +1,31 @@
+/* table.base.css */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table thead {
+  background-color: #fafafa;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 500;
+  color: #525252;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #171717;
+  vertical-align: top;
+}
+
+.table tbody tr:hover {
+  background-color: #fafafa;
+}
